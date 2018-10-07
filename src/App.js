@@ -10,7 +10,8 @@ const PropsObject = {
           'http://rnbquarterhorses.com/wp-content/uploads/sites/34/2017/09/55b87914990116205b4aa75205f900d2-american-quarter-horse-horse-breeds-300x294.jpg'        
   ],
   description: 'Darkness cannot drive out darkness: only light can do that. Hate cannot drive out hate: only love can do that.',
-  createdAt: new Date().toDateString(),
+  createdAt: Date.now(),
+  likes: ['Kashif','Sohail','Ahsan']
 }
 
 class App extends Component {

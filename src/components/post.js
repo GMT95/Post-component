@@ -17,7 +17,10 @@ import ShareIcon from '@material-ui/icons/Share';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import FbImageGrid from 'react-fb-image-grid';
+import moment from 'moment'
+import FacebookEmoji from 'react-facebook-emoji';
 import '../App.css'
+import { Icon } from '@material-ui/core';
 
 const styles = theme => ({
   card: {
@@ -48,16 +51,38 @@ const styles = theme => ({
   },
 });
 
+
 class Post extends React.Component {
-  state = { expanded: false };
+  constructor() {
+  super();
+  this.state = { expanded: false, 
+      showEmojis: false,
+      liked: false,
+      likeBtnColor: ''
+  };
+  this.hideEmoji = this.hideEmoji.bind(this);
+  this.likedByMe = this.likedByMe.bind(this);
+
+}
 
   handleExpandClick = () => {
     this.setState(state => ({ expanded: !state.expanded }));
   };
 
+  hideEmoji() {
+    this.setState({showEmojis: false})
+  }
+
+  likedByMe() {
+    const {liked,likeBtnColor} = this.state
+    this.setState({liked: !liked,likeBtnColor: likeBtnColor == 'blue' ? '' : 'blue'})
+  }
+
+  
   render() {
     const { classes } = this.props;
     const {data} = this.props
+    const {liked,showEmojis,likeBtnColor} = this.state
     return (
       
       <Card className={classes.card}>
@@ -68,29 +93,52 @@ class Post extends React.Component {
             </Avatar>
           }
           title={data.createdBy}
-          subheader={data.createdAt}
+          subheader={moment(data.createdAt).fromNow()}
         />
         {/* put sir kashif library here */}
         <CardContent>
+        {/* <Typography component="p">
+            {data.description}
+        </Typography> */}
+        <h3>{data.description}</h3>
           <div className="grid">
           <FbImageGrid 
               images={data.images} 
               countFrom={5}
               width={100}
-              align="left"
+              
           />
           </div>
-          <Typography component="p">
-            {this.props.description}
-          </Typography>
+          {/* <Typography component="p">
+            {data.description}
+          </Typography> */}
+          {liked ?
+          <p>You and {data.likes.length} others Reacted on this</p>
+          :<p>{data.likes.map((value) => <span>{value},</span>)} have Reacted on this</p>
+          }
         </CardContent>
         <CardActions className={classes.actions} disableActionSpacing>
-          <IconButton aria-label="Add to favorites">
-            <FavoriteIcon />
-          </IconButton>
-          <IconButton aria-label="Share">
-            <ShareIcon />
-          </IconButton>
+          
+          {showEmojis && 
+            <div 
+             style={{marginBottom:90,width:270,border: '2px solid #dcdcdc',borderRadius: 20,padding: 5,position:'absolute',backgroundColor: 'white'}}
+             onMouseLeave={this.hideEmoji}
+            >
+              <FacebookEmoji type="like" size='sm'/>
+              <FacebookEmoji type="love" size='sm'/>
+              <FacebookEmoji type="wow" size='sm'/>
+              <FacebookEmoji type="yay" size='sm'/>
+              <FacebookEmoji type="angry" size='sm'/>
+              <FacebookEmoji type="haha" size='sm'/>
+              <FacebookEmoji type="sad" size='sm'/>
+            </div>
+          }
+          <FavoriteIcon 
+          onClick={this.likedByMe} 
+          onMouseOver={() => this.setState({showEmojis: true})} 
+          style={{color: likeBtnColor}}
+          />
+          
         </CardActions>
 
       </Card>
